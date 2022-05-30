@@ -1,30 +1,69 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:myapp/services/auth.dart';
 
-import 'package:myapp/main.dart';
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const FlutterLogo(
+              size: 150,
+            ),
+            Flexible(
+                child: LoginButton(
+                    text: 'Continue as Guest',
+                    color: Colors.deepPurple,
+                    icon: FontAwesomeIcons.userNinja,
+                    loginMethod: AuthService().anonLogin))
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+class LoginButton extends StatelessWidget {
+  final String text;
+  final Color color;
+  final IconData icon;
+  final Function loginMethod;
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  const LoginButton(
+      {Key? key,
+      required this.text,
+      required this.color,
+      required this.icon,
+      required this.loginMethods})
+      : super(key: key);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: ElevatedButton.icon(
+        icon: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.all(24),
+          backgroundColor: color,
+        ),
+        onPressed: () => loginMethod,
+        label: Text(text, textAlign: TextAlign.center),
+      ),
+    );
+  }
 }
