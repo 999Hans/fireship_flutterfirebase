@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 // Import the firebase_core plugin
 import 'package:firebase_core/firebase_core.dart';
 import 'package:myapp/routes.dart';
+import 'package:myapp/services/firestore.dart';
+import 'package:myapp/services/models.dart';
 import 'package:myapp/theme.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,10 +45,14 @@ class _AppState extends State<App> {
 
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            theme: appTheme,
-            debugShowCheckedModeBanner: false,
-            routes: appRoutes,
+          return StreamProvider(
+            create: (_) => FirestoreService().streamReport(),
+            initialData: Report(),
+            child: MaterialApp(
+              theme: appTheme,
+              debugShowCheckedModeBanner: false,
+              routes: appRoutes,
+            ),
           );
         }
 
