@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myapp/services/auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../phone/phone.dart';
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -33,6 +35,13 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.blue,
                   icon: FontAwesomeIcons.google,
                   loginMethod: AuthService().googleLogin),
+              LoginButton(
+                  text: 'Sign in with Phone Number',
+                  color: Colors.teal,
+                  icon: FontAwesomeIcons.phone,
+                  loginMethod: () {
+                    Navigator.of(context).pushNamed('/phone');
+                  }),
               FutureBuilder<Object>(
                 future: SignInWithApple.isAvailable(),
                 builder: (context, snapshot) {

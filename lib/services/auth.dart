@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../shared/show_otp_dialog.dart';
 
 class AuthService {
   final userStream = FirebaseAuth.instance.authStateChanges();
@@ -13,6 +16,39 @@ class AuthService {
   Future<void> anonLogin() async {
     try {
       await FirebaseAuth.instance.signInAnonymously();
+    } on FirebaseAuthException catch (e) {
+      // handle error
+    }
+  }
+
+  Future<void> PhoneSignIn(BuildContext context, String phoneNumber) async {
+    TextEditingController codeController = TextEditingController();
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await FirebaseAuth.instance.signInWithCredential(credential);
+        },
+        verificationFailed: (e) {},
+        codeSent: ((String verificationId, int? resendToken) async {
+          showOTPDialog(
+            codeController: codeController,
+            context: context,
+            onPressed: () async {
+              PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                verificationId: verificationId,
+                smsCode: codeController.text.trim(),
+              );
+
+              // !!! Works only on Android, iOS !!!
+              await FirebaseAuth.instance.signInWithCredential(credential);
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed('/'); // Remove the dialog box
+            },
+          );
+        }),
+        codeAutoRetrievalTimeout: (String verificationID) {},
+      );
     } on FirebaseAuthException catch (e) {
       // handle error
     }
